@@ -1,0 +1,54 @@
+import requests, sys, time
+
+infile, source, outfile = sys.argv[1:4]
+lindex, rindex = map(int, sys.argv[4:6])
+assert source in ['UniProtKB/TrEMBL', 'UniProtKB/Swiss-Prot']
+# sys.exit()
+
+print 'loading queries'
+with open(infile, 'r') as f: query_list = f.read().strip().split('\n', rindex)[:rindex]
+query_list = query_list[lindex:]
+
+with requests.Session() as s, open(outfile, 'w') as f:
+# with requests.Session() as s:
+	start_time = time.time()
+	print 'begin'
+	sys.stdout.flush()
+
+	for i, ID in enumerate(query_list):
+
+		r = s.get(
+			'http://www.ebi.ac.uk/ena/data/xref/search',
+			params={
+				'source':				source,
+				'source_accession':		ID,
+				'target':				'coding',
+				'download':				'txt',
+			},
+			stream=False,
+		)
+		result = r.content
+		if result:
+			# print result
+			header, elements = result.strip().split(b'\n',1)
+			if header != 'Source	Source primary accession	Source secondary accession	Target	Target primary accession	Target secondary accession':
+				print result
+				sys.exit()
+			elements = elements.split()
+			assert all(_ == source for _ in elements[::6])
+			assert all(_ == ID for _ in elements[1::6])
+			assert all(_ == 'coding' for _ in elements[3::6])
+			result = '\n'.join('\t'.join(_) for _ in zip(*[elements[k::6] for k in [1, 2, 4, 5]]))
+			# print result
+			f.write(result + '\n')
+		# sys.exit()
+
+		i += 1
+		if i % 100 == 0:
+			duration = time.time() - start_time
+			avg_time = duration / float(i)
+			left_time = avg_time * (len(query_list)-i)
+			print "%d\t%.4f\t%.4f\t%.4f" % (i, duration, avg_time, left_time)
+			sys.stdout.flush()
+
+print "%f" % (time.time() - start_time)
