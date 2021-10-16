@@ -1,0 +1,6 @@
+Before running the script, here are some prerequisite:
+
+Get the newest uniclust dataset and use the ffdata as input
+run:
+	./run.sh uniclust30_2017_10_a3m.ffdata 2017_10
+

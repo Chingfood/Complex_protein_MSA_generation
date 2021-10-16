@@ -1,0 +1,76 @@
+=========
+Abstract:
+=========
+
+Generate the library for genomic alignment in complex contact
+
+======
+Usage:
+======
+
+Usage: ./genomic_dist_lib_update.sh [-t TempDir] <uniclust30.ffdata> [uniclust30_version]
+
+if do not specify the temprary directory, a random temporary directory will be generated.
+
+================
+Running example:
+================
+
+run:
+	./genomic_dist_lib_update.sh -t temp UniRef30_2020_06_a3m.ffdata 2020_06
+===================
+Prerequisite/Input:
+===================
+
+Before running the script, here are some prerequisite:
+	1. Have the Uniref dataset available. The uniref database on raptorx6 is located at: /mnt/local/qingyliu/uniref30_2020_06/UniRef30_2020_06_a3m.ffdata
+
+	2. Download the enaBrowserTools package from: https://github.com/enasequence/enaBrowserTools or https://github.com/enasequence/enaBrowserTools.git This is an official tool developed by ENA. So no matter how their website change, as long as they update this tools, you can still download contig using this tool. Make sure: 
+		a) This tool is up-to-date. 
+		b) If you planning to run this step at server. Have this tool unzipped at the server. 
+		c) Change its uncompressed folder's name to enaBrowserTools. (The default is enaBrowserTools-master) 
+		d) copy this folder to: source_file/util/
+
+	3. Have the python version later than 3.8 and Numpy. Python 3.7 might work, python 3.6 definitely not work.
+
+=============
+Output files:
+=============
+
+id_loc_2020_06
+
+- This file would be used as the library for genomic alignment in complex contact.  
+
+- To update the library, relink the file used in complex contact to the newly generated id_loc file:
+
+	ln -sf TempDir/2020_06/id_loc_2020_06 a3m_generation/AlignZTM/id2loc 
+
+id_loc_2020_06_uniref
+
+- This file is the same as id_loc_2020_06, only the Uniref ID has UniRef100_ ahead of the uniref ID.
+
+- This file is not used in the current alignment program.
+
+========================================================================================================================
+
+Warnings:
+When dowloading contigs (regular/wgs), especially when downloading wgs, make sure it only get paralleled by 10 threads. Too many threads will result shut down of the connection and may block future connections.
+
+
+Details of the code:
+
+This code would take 3-4 weeks to finish as there are two downloading stage. If your process may get killed by running too long and treated as ghost process or you are planning to shutting down your machine or running not in background. I strongly suggested you do it by steps. And isolate the two download stage to make sure everything is running smoothly. I have each step commented in genomic_dist_lib_update.sh. Commented out the steps you do not plan to run or have already run.
+
+
+=========================================================================================================================
+
+Tips:
+	
+	1. For downloading, sometimes the process may stuck. I have a rescue mechanism,the details and how to use the rescue mechanism can be referenced on the comments in genomic_dist_lib_update.sh. 
+	Rescue Mechanism: The stuck may caused by all sorts of reasons. I have set a time limit of 5 hours. If it stuck for longer than 5 hours, it will terminate and redownload it again automatically. If it stuck again for the second times, this entry will be passed. 
+
+
+
+
+
+

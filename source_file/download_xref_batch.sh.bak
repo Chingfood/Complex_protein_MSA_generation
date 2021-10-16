@@ -1,0 +1,20 @@
+#!/bin/bash
+
+source=$1
+folder=$2
+mkdir -p $folder
+
+o=1
+l=2000000
+url="https://www.ebi.ac.uk/ena/data/xref/search?source=$source&target=coding&offset=$o&length=$l"
+if [[ $source == UniProtKB/TrEMBL ]]; then source=UniProtKB_TrEMBL;
+elif [[ $source == UniProtKB/Swiss-Prot ]]; then source=UniProtKB_Swiss-Prot; fi
+rawfile=$folder/_$(($o-1))_$((o+l-1))_$source
+outfile=$folder/$(($o-1))_$((o+l-1))_$source
+wget $url -O $rawfile
+#curl $url -o 2
+
+wc -l $rawfile
+echo "The number above should not be greater than $l"
+
+tail -n+2 $rawfile | cut -f 2,3,5,6 > $outfile
