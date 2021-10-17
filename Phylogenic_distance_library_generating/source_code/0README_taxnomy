@@ -1,0 +1,85 @@
+=========
+Abstract:
+=========
+
+Generate the library for phylogenic alignment in complex contact
+
+======
+Usage:
+======
+
+Usage: ./run.sh <uniprot20.ffdata> <taxdmp_folder> <output_folder> <Rank_to_Digit_file>
+
+================
+Running example:
+================
+
+run:
+    	./run.sh /mnt/data/conmod_databases/uniprot20_series/uniprot20_2016_02/uniprot20_2016_02_a3m.ffdata /home/qingyliu/taxonomy/taxdmp /home/qingyliu/taxonomy/output /home/qingyliu/taxonomy/Rank_to_Digit
+
+===================
+Prerequisite/Input:
+===================
+
+	1. uniprot20_2016_02_a3m.ffdata: 
+		The uniclust database is located at: /mnt/data/conmod_databases/uniprot20_series/
+
+	2. taxdmp: folder contains the newest taxonomy database
+		Download the current NCBI taxonomy database and decompress it to have taxdmp folder. 
+		The database is downloaded from: https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdmp.zip
+	
+	3. output: folder to contain the output file
+
+	4. Rank_to_Digit file: 
+		a self-defined rule to digitalize the rank. The content is pasted at the end of the README. You can locate this file at: /home/qingyliu/taxonomy/Rank_to_Digit or you can paste the content to a new file.
+
+=============
+Output files:
+=============
+
+output/names.dmp_species_taxid_better_fixed3_TaxTree 
+
+output/species_out_no_TaxTree
+
+- These two files would be used as the library for phylogenic alignment in complex contact.  
+
+- To update the library, copy the file to the complex contact library folder:
+
+	cp  output/names.dmp_species_taxid_better_fixed3_TaxTree InterContact_Pred/MSA_ConCat_Package/data/names.dmp_species_taxid_better_fixed3_TaxTree
+
+	cp output/species_out_no_TaxTree /home/qingyliu/InterContact_Pred/MSA_ConCat_Package/data/species_out_no_TaxTree
+
+
+=========================================================================================================================
+
+Rank_to_Digit:
+
+no|1
+superkingdom|2
+kingdom|3
+subkingdom|4
+superphylum|5
+phylum|6
+subphylum|7
+superclass|8
+class|9
+subclass|10
+infraclass|11
+superorder|12
+order|13
+suborder|14
+infraorder|15
+parvorder|16
+superfamily|17
+family|18
+subfamily|19
+tribe|20
+subtribe|21
+genus|22
+subgenus|23
+species|24
+subspecies|25
+varietas|26
+forma|27 
+
+

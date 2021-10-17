@@ -1,0 +1,123 @@
+
+#=========
+#Abstract
+#=========
+
+Given two input sequence, first generate their A3M files, and then concatenate the two A3M files into one MSA.
+
+
+
+#========
+#Install
+#========
+
+1. download the package
+
+	git clone https://bitbucket.org/realbigws/msa_concat_package
+	mv msa_concat_package MSA_ConCat_Package
+	cd MSA_ConCat_Package
+
+#--------------
+
+2. compile the package
+
+	cd source_code/
+		make
+	cd ../
+
+#--------------
+
+3. setup at the first time
+
+	./setup.pl
+
+[note]:
+before you run anything, type the above command for configuration just for once.
+
+
+#=========
+#Required
+#=========
+
+
+1. hhsuite-2.0.16-linux-x86_64
+	http://wwwuser.gwdg.de/~compbiol/data/hhsuite/releases/all/hhsuite-2.0.16-linux-x86_64.tar.gz
+
+
+2. ncbi-blast-2.6.0+
+	ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.6.0+-x64-linux.tar.gz
+
+
+
+#=========
+#Database
+#=========
+
+1. if databases/uniprot20 not exist, create it by 
+
+	mkdir -p databases/uniprot20
+
+
+2. download the UniProt20 database from the following link:
+
+http://wwwuser.gwdg.de/~compbiol/data/hhsuite/databases/hhsuite_dbs/uniprot20_2016_02.tgz
+
+uncompressed it, and move all files to databases/uniprot20
+
+
+3. if other version of UniProt20 is applied, then use '-d uniprot20' option in ./Fast_TGT.sh
+
+
+
+#======
+#Usage
+#======
+
+Usage: ./oneline_concat.sh <input_fasta_1> <input_fasta_2> [CPU_NUM]
+
+
+#========
+#Example
+#========
+
+./oneline_concat.sh example/1j1dA.fasta example/1j1dC.fasta 24
+
+
+
+
+#====================
+#Detailed Procedures
+#====================
+
+#--------------- Part 0: check species belongings -------------#
+#-> if species name is already knonw
+util/species_check.sh "Homo sapiens"
+#-> if sequence is already known
+util/species_extract.sh -i example/1j1dA.fasta -c 24
+
+
+#--------------- Part 1: generate A3M from Fasta --------------#
+./Fast_TGT.sh -i example/107107.fasta -c 24
+
+
+#--------------- Part 2: process original A3M -----------------#
+#-> step 1. transform original A3M to A3M_NoGap
+bin/A3M_NoGap example/107107.a3m 107107.a3m_nogap
+
+#-> step 2. generate A3M species block
+bin/A3M_SpecBloc 107107.a3m_nogap data/species_out_no_TaxTree 107107.a3m_specbloc > species_block
+
+
+#--------------- Part 3: concatenate two MSAs -----------------#
+#-> step 1.
+bin/A3M_NoGap example/1j1dA.a3m 1j1dA.a3m_nogap
+bin/A3M_NoGap example/1j1dC.a3m 1j1dC.a3m_nogap
+
+#-> step 2.
+bin/A3M_SpecBloc 1j1dA.a3m_nogap data/names.dmp_species_taxid_better_fixed3_TaxTree 1j1dA.a3m_specbloc 1> 1j1dA.block
+bin/A3M_SpecBloc 1j1dC.a3m_nogap data/names.dmp_species_taxid_better_fixed3_TaxTree 1j1dC.a3m_specbloc 1> 1j1dC.block
+
+#-> step 3.
+./MSA_ConCat 1j1dA.a3m_specbloc 1j1dC.a3m_specbloc 1j1dA_1j1dC.a3m_concat
+
+

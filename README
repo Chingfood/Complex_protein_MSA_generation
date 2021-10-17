@@ -1,0 +1,9 @@
+This is the directory that produces the MSA for complex protein by concatenating two proteins MSA together based on their genomic distance and phylogenic distance.
+
+Two proteins basic MSA is carried out by HHblits with Uniref30 library.
+
+Two MSA is concatenated by the genomic distance library and phylogenic distance library. 
+
+The genomic distance library is generated from Uniref30 library using code from Genomic_distance_library_generating
+
+The phylogenic distance library is generated from taxonomy library from NCBI (taxdmp) using code from Phylogenic_distance_library_generating
